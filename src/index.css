@@ -29,6 +29,75 @@ body {
     cursor: not-allowed;
 }
 
+.visualizer-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.visualizer-controls {
+    width: 280px;
+}
+
+.visualizer-bars {
+    flex: 1;
+}
+
+.visualizer-controls select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    border: 1px solid #475569;
+    border-radius: 6px;
+    background-color: #1e293b;
+    color: #e2e8f0;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.visualizer-controls select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.control-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.control-buttons button {
+    flex: 1;
+    margin-right: 0;
+}
+
+.sorting-stats {
+    margin-bottom: 20px;
+}
+
+.sorting-stats p {
+    margin: 6px 0;
+}
+
+.algorithm-description {
+    margin-top: 20px;
+    padding: 16px;
+    background-color: #1e293b;
+    border-radius: 8px;
+}
+
+.algorithm-description h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+}
+
+.algorithm-description p {
+    margin: 0;
+    line-height: 1.5;
+    color: #cbd5e1;
+    font-size: 14px;
+}
+
 .bars {
     display: flex;
     align-items: flex-end;
