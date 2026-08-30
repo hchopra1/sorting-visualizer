@@ -8,9 +8,11 @@ function SortingVisualizer() {
     const [speed, setSpeed] = useState(500)
     const [comparisons, setComparisons] = useState(0)
     const [swaps, setSwaps] = useState(0)
+    const [isPaused, setIsPaused] = useState(false)
 
     // Used to stop an algorithm while it is running
     const stopSorting = useRef(false)
+    const pauseSorting = useRef(false)
 
     function shouldStopSorting() {
         if (stopSorting.current) {
@@ -20,6 +22,12 @@ function SortingVisualizer() {
         }
 
         return false
+    }
+
+    async function waitWhilePaused() {
+        while (pauseSorting.current) {
+            await new Promise(resolve => setTimeout(resolve, 100))
+        }
     }
 
     async function bubbleSort() {
@@ -38,6 +46,8 @@ function SortingVisualizer() {
                 setComparisons(prev => prev + 1)
 
                 await new Promise(resolve => setTimeout(resolve, speed))
+
+                await waitWhilePaused()
 
                 if (shouldStopSorting()) return
 
@@ -66,6 +76,8 @@ function SortingVisualizer() {
 
     async function selectionSort() {
         stopSorting.current = false
+        pauseSorting.current = false
+        setIsPaused(false)
         setIsSorting(true)
         setComparisons(0)
         setSwaps(0)
@@ -80,6 +92,8 @@ function SortingVisualizer() {
                 setComparisons(prev => prev + 1)
 
                 await new Promise(resolve => setTimeout(resolve, speed))
+
+                await waitWhilePaused()
 
                 if (shouldStopSorting()) return
 
@@ -105,6 +119,8 @@ function SortingVisualizer() {
 
     async function insertionSort() {
         stopSorting.current = false
+        pauseSorting.current = false
+        setIsPaused(false)
         setIsSorting(true)
         setComparisons(0)
         setSwaps(0)
@@ -119,6 +135,8 @@ function SortingVisualizer() {
                 setComparisons(prev => prev + 1)
 
                 await new Promise(resolve => setTimeout(resolve, speed))
+
+                await waitWhilePaused()
 
                 if (shouldStopSorting()) return
 
@@ -142,6 +160,183 @@ function SortingVisualizer() {
         setActiveIndexes([])
     }
 
+    async function mergeSort() {
+        stopSorting.current = false
+        pauseSorting.current = false
+        setIsPaused(false)
+        setIsSorting(true)
+        setComparisons(0)
+        setSwaps(0)
+
+        const newNumbers = [...numbers]
+
+        await mergeSortHelper(newNumbers, 0, newNumbers.length - 1)
+
+        await waitWhilePaused()
+
+        if (shouldStopSorting()) return
+
+        setNumbers(newNumbers)
+        setIsSorting(false)
+        setActiveIndexes([])
+    }     
+
+    //helper for mergeSort
+    async function mergeSortHelper(array, start, end) {
+        if (start >= end) {
+            return
+        }
+
+        const middle = Math.floor((start + end) / 2)
+
+        await mergeSortHelper(array, start, middle)
+
+        if (shouldStopSorting()) return
+
+        await mergeSortHelper(array, middle + 1, end)
+
+        if (shouldStopSorting()) return
+
+        await merge(array, start, middle, end)
+    }
+
+    async function merge(array, start, middle, end) {
+        const left = array.slice(start, middle + 1)
+        const right = array.slice(middle + 1, end + 1)
+
+        let i = 0
+        let j = 0
+        let k = start
+
+        while (i < left.length && j < right.length) { 
+            setActiveIndexes([start + i, middle + 1 + j])
+            setComparisons(prev => prev + 1)
+
+            if (left[i] <= right[j]) {
+                if (array[k] !== left[i]) {
+                    setSwaps(prev => prev + 1)
+                }
+                
+                array[k] = left[i]
+                i++
+            } else {
+                if (array[k] !== right[j]) {
+                    setSwaps(prev => prev + 1)
+                }
+
+                array[k] = right[j]
+                j++
+            }
+
+            setNumbers([...array])
+
+            await new Promise(resolve => setTimeout(resolve, speed))
+
+            if (shouldStopSorting()) return
+
+            k++
+        }
+
+        while (i < left.length) {
+            array[k] = left[i]
+            setNumbers([...array])
+
+            await new Promise(resolve => setTimeout(resolve, speed))
+
+            await waitWhilePaused()
+
+            if (shouldStopSorting()) return
+
+            i++
+            k++
+        }
+
+        while (j < right.length) {
+            array[k] = right[j]
+            setNumbers([...array])
+
+            await new Promise(resolve => setTimeout(resolve, speed))
+
+            if (shouldStopSorting()) return
+
+            j++
+            k++
+        }
+    }
+
+    async function quickSort() {
+        stopSorting.current = false
+        pauseSorting.current = false
+        setIsPaused(false)
+        setIsSorting(true)
+        setComparisons(0)
+        setSwaps(0)
+
+        const newNumbers = [...numbers]
+
+        await quickSortHelper(newNumbers, 0, newNumbers.length - 1)
+
+        await waitWhilePaused()
+
+        if (shouldStopSorting()) return
+
+        setNumbers(newNumbers)
+        setIsSorting(false)
+        setActiveIndexes([])
+    }
+
+    async function quickSortHelper(array, low, high) {
+        if (low >= high) {
+            return
+        }
+
+        const pivotIndex = await partition(array, low, high)
+
+        if (shouldStopSorting()) return
+
+        await quickSortHelper(array, low, pivotIndex - 1)
+
+        if (shouldStopSorting()) return
+
+        await quickSortHelper(array, pivotIndex + 1, high)
+    }
+
+    async function partition(array, low, high) {
+        const pivot = array[high]
+        let i = low - 1
+
+        for (let j = low; j < high; j++) {
+            setActiveIndexes([j, high])
+            setComparisons(prev => prev + 1)
+
+            await new Promise(resolve => setTimeout(resolve, speed))
+
+            await waitWhilePaused()
+
+            if (shouldStopSorting()) return
+
+            if (array[j] < pivot) {
+                i++
+
+                const temp = array[i]
+                array[i] = array[j]
+                array[j] = temp
+
+                setNumbers([...array])
+                setSwaps(prev => prev + 1)
+            }
+        }
+
+        const temp = array[i + 1]
+        array[i + 1] = array[high]
+        array[high] = temp
+
+        setNumbers([...array])
+        setSwaps(prev => prev + 1)
+
+        return i + 1
+    }
+
     // Runs whichever algorithm is selected
     async function sortNumbers() {
         if (algorithm === 'bubble') {
@@ -155,11 +350,20 @@ function SortingVisualizer() {
         if (algorithm === 'insertion') {
             await insertionSort()
         }
+        if (algorithm === 'merge') {
+            await mergeSort()
+        }
+        if (algorithm === 'quick') {
+            await quickSort()
+    }
     }
 
     function resetNumbers() {
         // Tells the currently running algorithm to stop
         stopSorting.current = true
+        pauseSorting.current = false
+
+        setIsPaused(false)
 
         const randomNumbers = Array.from(
             { length: 8 },
@@ -187,6 +391,8 @@ function SortingVisualizer() {
                         <option value="bubble">Bubble Sort</option>
                         <option value="selection">Selection Sort</option>
                         <option value="insertion">Insertion Sort</option>
+                        <option value="merge">Merge Sort</option>
+                        <option value="quick">Quick Sort</option>
                     </select>
 
                     <select
@@ -200,6 +406,16 @@ function SortingVisualizer() {
                     </select>
 
                     <div className="control-buttons">
+                        <button
+                            onClick={() => {
+                                pauseSorting.current = !pauseSorting.current
+                                setIsPaused(pauseSorting.current)
+                            }}
+                            disabled={!isSorting}
+                        >
+                            {isPaused ? 'Resume' : 'Pause'}
+                        </button>
+
                         <button
                             onClick={sortNumbers}
                             disabled={isSorting}
@@ -223,7 +439,11 @@ function SortingVisualizer() {
                                 ? 'Bubble Sort'
                                 : algorithm === 'selection'
                                 ? 'Selection Sort'
-                                : 'Insertion Sort'
+                                : algorithm === 'insertion'
+                                ? 'Insertion Sort'
+                                : algorithm === 'merge'
+                                ? 'Merge Sort'
+                                : 'Quick Sort'
                             }
                         </h3>
 
@@ -232,7 +452,47 @@ function SortingVisualizer() {
                                 ? 'Repeatedly compares neighboring values and swaps them if they are in the wrong order.'
                                 : algorithm === 'selection'
                                 ? 'Repeatedly finds the smallest remaining value and moves it into the next sorted position.'
-                                : 'Builds the sorted portion one value at a time by moving each value left until it reaches the correct position.'
+                                : algorithm === 'insertion'
+                                ? 'Builds the sorted portion one value at a time by moving each value left until it reaches the correct position.'
+                                : algorithm === 'merge'
+                                ? 'Divides the array into smaller halves, sorts those halves, and then merges them back together in order.'
+                                : 'Chooses a pivot, moves smaller values to one side and larger values to the other, then repeats the process on each side.'
+                            }
+                        </p>
+                    </div>
+
+                    <div className="runtime">
+                        <h3>Runtime</h3>
+
+                        <p>
+                            <strong>Best:</strong>{' '}
+                            {algorithm === 'bubble'
+                                ? 'O(n)'
+                                : algorithm === 'selection'
+                                ? 'O(n²)'
+                                : algorithm === 'insertion'
+                                ? 'O(n)'
+                                : algorithm === 'merge'
+                                ? 'O(n log n)'
+                                : 'O(n log n)'
+                            }
+                        </p>
+
+                        <p>
+                            <strong>Average:</strong>{' '}
+                            {algorithm === 'merge' || algorithm === 'quick'
+                                ? 'O(n log n)'
+                                : 'O(n²)'
+                            }
+                        </p>
+
+                        <p>
+                            <strong>Worst:</strong>{' '}
+                            {algorithm === 'quick'
+                                ? 'O(n²)'
+                                : algorithm === 'merge'
+                                ? 'O(n log n)'
+                                : 'O(n²)'
                             }
                         </p>
                     </div>

@@ -81,9 +81,10 @@ body {
 
 .algorithm-description {
     margin-top: 20px;
-    padding: 16px;
+    padding: 20px;
     background-color: #1e293b;
     border-radius: 8px;
+    min-height: 160px;
 }
 
 .algorithm-description h3 {
@@ -96,6 +97,22 @@ body {
     line-height: 1.5;
     color: #cbd5e1;
     font-size: 14px;
+}
+
+.runtime {
+    margin-top: 16px;
+    padding: 20px;
+    background-color: #1e293b;
+    border-radius: 8px;
+}
+
+.runtime h3 {
+    margin: 0 0 12px 0;
+    font-size: 18px;
+}
+
+.runtime p {
+    margin: 6px 0;
 }
 
 .bars {
