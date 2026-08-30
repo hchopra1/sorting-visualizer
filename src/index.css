@@ -145,6 +145,18 @@ body {
         padding: 30px 20px;
     }
 
+    .visualizer-layout {
+        flex-direction: column;
+    }
+
+    .visualizer-controls {
+        width: 100%;
+    }
+
+    .visualizer-bars {
+        width: 100%;
+    }
+
     .bar {
         width: 30px;
     }
